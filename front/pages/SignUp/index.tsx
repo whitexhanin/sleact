@@ -4,35 +4,53 @@ import useInput from '@hooks/useInput';
 import { Form , Label , Input , Button , Error , Success , LinkContainer } from "./styles";
 
 import { Link } from 'react-router-dom';
+import axios from "axios";
 
 
 
-const SignUp = () => {
-    const [bool,setbool] = useState(true);
+const SignUp = () => {    
+    const [email , onChangeEmail] = useInput('');
+    const [nickname , onChangeName] = useInput('');
+    const [password , _1, setPassword] = useInput('');
+    const [checkpassword , _2, setCheckpassword] = useInput('');
+    const [mismatchError , setMismatchError] = useState(false);
+    const [mistextError , setMistextError] = useState(false);
 
-    const [email , setEmail] = useInput('');
+    const onSubmit = useCallback(
+        (e) => {        
+            e.preventDefault();            
+            if(!mismatchError){
+                console.log('서버로 회원가입 요청');
+                axios.post('http://localhost:3095/api/users',{email,nickname,password})                
+                .then((response)=>{
+                    console.log(response);
+                })
+                .catch((error)=>{
+                    console.log(error.response)
+                })
+            }
 
-    const onSubmit = () => {
+            if(!nickname){
+                setMistextError(true);
+            }
+            console.log(email,nickname,password,checkpassword); 
+        },
+        [email,nickname,password,checkpassword,mismatchError]
+    )
 
-    }
-
-    const onChangeEmail = () => {
-
-
-    }
-
-    const onChangeName = () => {
-
-
-    }
-
-    const onChangePassword = () => {
-
-    }
-
-    const onChangeCheckPassword = () => {
-
-    }
+    const onChangePassword = useCallback(
+        (e) => {
+            setPassword(e.target.value);            
+        },
+        [password]
+    )
+    const onChangeCheckPassword = useCallback(
+        (e) => {
+            setCheckpassword(e.target.value);
+            setMismatchError(e.target.value !== password);
+        },
+        [checkpassword]
+    )
     return(
         <>
             <div>SignUp</div>
@@ -43,7 +61,8 @@ const SignUp = () => {
                 </Label>
                 <Label>
                     <span>Name</span>
-                    <Input type="text" name="name" value={username} onChange={onChangeName}/>                
+                    <Input type="text" name="name" value={nickname} onChange={onChangeName}/>     
+                    {mistextError && <Error>이름을 입력 하세요.</Error>}                  
                 </Label>
                 <Label>
                     <span>Password</span>
@@ -51,9 +70,9 @@ const SignUp = () => {
                 </Label>
                 <Label>
                     <span>Check Password</span>
-                    <Input type="password" name="checkpassword" value={checkpassword} onChange={onChangeCheckPassword}/>                
-                </Label>
-                {bool?<Error>err text</Error> : <Success>success text</Success>}
+                    <Input type="password" name="checkpassword" value={checkpassword} onChange={onChangeCheckPassword}/>                                    
+                    {mismatchError && <Error>비밀번호가 일치 하지 않습니다.</Error>}
+                </Label>               
                 <Button type="submit">Submit</Button>   
             </Form>                       
             <LinkContainer>
