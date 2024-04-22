@@ -9,4 +9,4 @@ const useInput = <T = any>(initialValue: T): [T, (e:any)=> void, Dispatch<SetSta
     return [value,handler,setValue];
 }
 
-export default useInput;
+export default useInput; 
