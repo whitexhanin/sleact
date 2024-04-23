@@ -15,17 +15,13 @@ interface Props {
 
 const InviteWorkspaceModal: VFC<Props> = ({show,onCloseModal,setShowCreateChannelModal}) => {
 
-    const [newChannel, onChangeNewChannel , setNewChannel] = useInput('');    
+    const [newEmail, onChangeNewEmail , setNewEmail] = useInput('');    
     const { workspace, channel } = useParams<{workspace:string; channel : string;}>();
-    const onCreateChannel = useCallback((e)=>{
+    const onCreateInvite = useCallback((e)=>{
         e.preventDefault();
-        //채널만드는 요청 보내기
-        //현재 내가 어디 workspace에서 무슨 채널을 만들 것인가?
-        //서버랑 잘 소통 하려면 어떠한 정보를 줘야 하는지 정확히 파악해야 한다
-        //useParams로 주소의 정보를 사용 안하면 workspace의 정보를 state로 가져와야 하고
-        //state를 사용 하는 곳마다 이동 / 저장 해야 한다 useParams가 간편한거 같음
-        axios.post(`http://localhost:3095/api/workspaces/${workspace}/channels`,{
-            name: newChannel,
+        
+        axios.post(`http://localhost:3095/api/workspaces/${workspace}/members`,{
+            email: newEmail
         },
         {
             withCredentials: true,
@@ -33,7 +29,7 @@ const InviteWorkspaceModal: VFC<Props> = ({show,onCloseModal,setShowCreateChanne
     )
     .then(() => {
         setShowCreateChannelModal(false);
-        setNewChannel('');
+        setNewEmail('');
     })
     .catch((error)=>{
         //에러났을때 console.dir로 보면 에러 난걸 보기 쉬움
@@ -56,12 +52,12 @@ const InviteWorkspaceModal: VFC<Props> = ({show,onCloseModal,setShowCreateChanne
 
  return(
     <Modal show={show} onCloseModal={onCloseModal}>
-        <form onSubmit={onCreateChannel}>
+        <form onSubmit={onCreateInvite}>
             <label id="channel=label">
-                <span>채널</span>
-                <input type="text" id="channel" value={newChannel} onChange={onChangeNewChannel}/>
+                <span>초대 받을 사람</span>
+                <input type="text" id="channel" value={newEmail} onChange={onChangeNewEmail}/>
             </label>
-            <button>생성하기</button>
+            <button>초대하기</button>
         </form>
     </Modal>
       
