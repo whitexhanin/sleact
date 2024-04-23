@@ -26,10 +26,11 @@ const LogIn = () => {
                  {withCredentials: true,}
                  )          
             .then((response)=>{
-                mutate(response.data , false);
+                mutate(response.data );
                 console.log('login then',response)
             })
             .catch((error) =>{
+                console.dir(error);
                 setLoginError(error.response?.data?.statusCode === 401);
             })           
         },
@@ -41,11 +42,11 @@ const LogIn = () => {
     if(data) {        
         {console.log('data있음')}
         return (            
-            <Redirect to="/workspace" />
+            <Redirect to="/workspace/sleact/channel/일반" />
         )
     }
-    if(!data){
-        {console.log('data없음')}
+    if(data === undefined){
+        return <div>로딩중...</div>
     }
 
     return (

@@ -32,7 +32,9 @@ const Workspace:VFC = ({}) => {
     const {workspace} = useParams<{workspace: string}>();
 
     
-    const {data : userData , error, mutate} = useSWR<IUser>('http://localhost:3095/api/users', fetcher);
+    const {data : userData , error, mutate} = useSWR<IUser>('http://localhost:3095/api/users', fetcher,{
+        dedupingInterval: 2000,
+    });
     
     //채널 생성시 확인 방법
     const { data: channelData } = useSWR<IChannel[]>(
@@ -84,8 +86,8 @@ const Workspace:VFC = ({}) => {
             workspace: newWorkspace,
             url:newUrl,
         })
-        .then(()=>{
-            // revalidate();
+        .then(()=>{            
+            mutate();
             setShowCreateWorkspaceModal(false); 
             setNewWorkspace('');
             setNewUrl('');
@@ -140,9 +142,9 @@ const Workspace:VFC = ({}) => {
             </Header>            
             <WorkspaceWrapper>
                 <Workspaces>
-                    {userData?.Workspaces.map((ws)=>{
+                    {userData?.Workspaces?.map((ws)=>{
                         return (
-                            <Link key={ws.id} to ={`/workspace/${123}/chanel/일반`}>
+                            <Link key={ws.id} to ={`/workspace/${123}/channels/일반`}>
                                 <WorkspaceButton>{ws.name.slice(0,1).toUpperCase()}</WorkspaceButton>
                             </Link>
                         )
