@@ -20,11 +20,11 @@ const SignUp = () => {
     const [signupSuccess , setSignupSuccess] = useState(false);
 
     const {data , error, mutate} = useSWR('http://localhost:3095/api/users', fetcher);
-
+        console.log(data);
     const onSubmit = useCallback(
         (e) => {        
             e.preventDefault();            
-            if(!mismatchError){
+            if(!mismatchError && nickname){
                 console.log('성공');
                 setSignupError('');
                 setSignupSuccess(false);
@@ -32,9 +32,11 @@ const SignUp = () => {
                     email,
                     nickname,
                     password,
-                })
+                },
+                {withCredentials: true,}
+            )
                 .then((response) => {
-                    console.log(response);
+                    console.log(response);                    
                     setSignupSuccess(true);
                 })
                 .catch((error) => {
@@ -60,10 +62,12 @@ const SignUp = () => {
         },
         [checkpassword]
     )
-
-    if(data){
-        return <Redirect to="/workspace/sleact/channel/일반" />
+    console.log('signupSuccess있음?' , signupSuccess);
+    if(signupSuccess){
+        console.log('signupSuccess있음?' , signupSuccess);
+        return <Redirect to="/login" />
     }
+
     return(
         <>
             <div>SignUp</div>
@@ -90,9 +94,8 @@ const SignUp = () => {
                 {signupError  && <Error>{signupError}</Error>}
                 {signupSuccess && <Success>회원가입완료</Success>}
             </Form>                       
-            <LinkContainer>
-                회원가입하러가기
-                <Link to ="/signup" />            
+            <LinkContainer>                
+                <Link to ="/login">로그인 하러가기</Link>
             </LinkContainer>
         </>   
     )

@@ -15,10 +15,10 @@ import Modal from "@components/Modal";
 interface Props {
     show: boolean;
     onCloseModal: () => void;
-    setShowInviteWorkspaceModal: (flag: boolean) => void;
+    setShowInviteChannelModal: (flag: boolean) => void;
 }
 
-const InviteWorkspaceModal: VFC<Props> = ({show,onCloseModal,setShowInviteWorkspaceModal}) => {
+const InviteChannelModal: VFC<Props> = ({show,onCloseModal,setShowInviteChannelModal}) => {
 
     const [newEmail, onChangeNewEmail , setNewEmail] = useInput('');    
     const { workspace, channel } = useParams<{workspace:string; channel : string;}>();
@@ -34,10 +34,10 @@ const InviteWorkspaceModal: VFC<Props> = ({show,onCloseModal,setShowInviteWorksp
     );
 
 
-    const onInviteMember = useCallback((e)=>{
+    const onInviteChannelMember = useCallback((e)=>{
         e.preventDefault();
         
-        axios.post(`http://localhost:3095/api/workspaces/${workspace}/members`,{
+        axios.post(`http://localhost:3095/api/workspaces/${workspace}/channels/${channel}/members`,{
             email: newEmail
         },
         {
@@ -46,7 +46,7 @@ const InviteWorkspaceModal: VFC<Props> = ({show,onCloseModal,setShowInviteWorksp
     )
     .then(() => {
         memberMutate();
-        setShowInviteWorkspaceModal(false);
+        setShowInviteChannelModal(false);
         setNewEmail('');
     })
     .catch((error)=>{
@@ -69,16 +69,15 @@ const InviteWorkspaceModal: VFC<Props> = ({show,onCloseModal,setShowInviteWorksp
 
  return(
     <Modal show={show} onCloseModal={onCloseModal}>
-        <form onSubmit={onInviteMember}>
-            <label id="member-label">
+        <form onSubmit={onInviteChannelMember}>
+            <label id="channelmember-label">
                 <span>초대 받을 사람</span>
-                <input type="text" id="member" value={newEmail} onChange={onChangeNewEmail}/>
+                <input type="text" id="channelmember" value={newEmail} onChange={onChangeNewEmail}/>
             </label>
             <button>보내기</button>
         </form>
-    </Modal>
-      
+    </Modal>      
  )
 }
 
-export default InviteWorkspaceModal;
+export default InviteChannelModal;

@@ -13,9 +13,7 @@ const LogIn = () => {
     const [password ,onChangePassword] = useInput('');
     const [loginError , setLoginError] = useState(false);
     console.log('in login' , data, error);
-
-
-
+    
     const onSubmit = useCallback(
         (e) => {        
             e.preventDefault();  
@@ -65,9 +63,8 @@ const LogIn = () => {
                 {loginError  && <Error></Error>}
                 {/* {signupSuccess && <Success></Success>} */}
             </Form>                       
-            <LinkContainer>
-                회원가입하러가기
-                <Link to ="/signup" />            
+            <LinkContainer>                
+                <Link to ="/signup" >회원가입하러가기</Link>
             </LinkContainer>
         </>
     )
