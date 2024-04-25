@@ -19,7 +19,7 @@ const SignUp = () => {
     const [signupError , setSignupError] = useState('');
     const [signupSuccess , setSignupSuccess] = useState(false);
 
-    const {data , error, mutate} = useSWR('http://localhost:3095/api/users', fetcher);
+    const {data , error, mutate} = useSWR('/api/users', fetcher);
         console.log(data);
     const onSubmit = useCallback(
         (e) => {        

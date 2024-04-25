@@ -21,6 +21,8 @@ import useInput from "@hooks/useInput";
 import CreateChannelModal from "@components/CreateChannelModal";
 import InviteWorkspaceModal from "@components/InviteWorkspaceModal";
 import InviteChannelModal from "@components/InviteChannelModal";
+import ChannelList from "@components/ChannelList";
+import DMList from "@components/DMList";
 
 
 const Workspace:VFC = ({}) => {
@@ -33,17 +35,24 @@ const Workspace:VFC = ({}) => {
     const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
     const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
     const {workspace} = useParams<{workspace: string}>();    
-    const {data : userData , error, mutate} = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher,{
+    
+    
+    const {data : userData , error, mutate} = useSWR<IUser | false>('/api/users', fetcher,{
         dedupingInterval: 2000,
-    });    
-    //채널 생성시 확인 방법
+    });        
     const { data: channelData } = useSWR<IChannel[]>(
-      userData? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
+      userData? `/api/workspaces/${workspace}/channels` : null,
         fetcher
     );
+    const { data: memberData } = useSWR<IUser | false | any>(
+        userData? `/api/workspaces/${workspace}/members` : null,
+          fetcher          
+      );
+      console.log(memberData);
+
 
     const onLogout = useCallback(() => {
-        axios.post('http://localhost:3095/api/users/logout', null, {
+        axios.post('/api/users/logout', null, {
             withCredentials: true,
         })
         .then(()=>{
@@ -167,8 +176,9 @@ const Workspace:VFC = ({}) => {
                                 <button onClick={onClickAddChannel}>채널 만들기</button>
                                 <button onClick={onLogout}>로그아웃</button>
                             </WorkspaceModal>
-                        </Menu>
-                        {channelData?.map((v)=>(<div key={v.name}>{v.name}</div>))}
+                        </Menu>                        
+                        <ChannelList />                        
+                        <DMList />                                                                        
                     </MenuScroll>
                 </Channels>
                 <Switch>

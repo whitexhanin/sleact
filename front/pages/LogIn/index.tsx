@@ -8,7 +8,7 @@ import useSWR from "swr";
 
 const LogIn = () => {
 
-    const {data , error, mutate} = useSWR('http://localhost:3095/api/users', fetcher);
+    const {data , error, mutate} = useSWR('/api/users', fetcher);
     const [email , onChangeEmail] = useInput('');
     const [password ,onChangePassword] = useInput('');
     const [loginError , setLoginError] = useState(false);
@@ -19,7 +19,7 @@ const LogIn = () => {
             e.preventDefault();  
             setLoginError(false);
             axios.post(
-                'http://localhost:3095/api/users/login' ,
+                '/api/users/login' ,
                  {email,password},
                  {withCredentials: true,}
                  )          

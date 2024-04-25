@@ -21,13 +21,13 @@ const CreateChannelModal: VFC<Props> = ({show,onCloseModal,setShowCreateChannelM
 
     const [newChannel, onChangeNewChannel , setNewChannel] = useInput('');    
     const { workspace, channel } = useParams<{workspace:string; channel : string;}>();
-    const {data : userData , error , mutate : userMutate} = useSWR<IUser>('http://localhost:3095/api/users', fetcher,{
+    const {data : userData , error , mutate : userMutate} = useSWR<IUser>('/api/users', fetcher,{
         dedupingInterval: 2000,
     });
     
     //채널 생성시 확인 방법
     const { data: channelData , mutate :  channelMutate } = useSWR<IChannel[]>(
-      userData? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
+      userData? `/api/workspaces/${workspace}/channels` : null,
         fetcher
     );
 
@@ -38,7 +38,7 @@ const CreateChannelModal: VFC<Props> = ({show,onCloseModal,setShowCreateChannelM
         //서버랑 잘 소통 하려면 어떠한 정보를 줘야 하는지 정확히 파악해야 한다
         //useParams로 주소의 정보를 사용 안하면 workspace의 정보를 state로 가져와야 하고
         //state를 사용 하는 곳마다 이동 / 저장 해야 한다 useParams가 간편한거 같음
-        axios.post(`http://localhost:3095/api/workspaces/${workspace}/channels`,{
+        axios.post(`/api/workspaces/${workspace}/channels`,{
             name: newChannel,            
         },
         {
