@@ -1,4 +1,4 @@
-import React, {VFC, useCallback, useState  } from "react";
+import React, {VFC, useCallback, useEffect, useState  } from "react";
 import { Header , RightMenu , ProfileImg , WorkspaceWrapper , Workspaces , Channels , WorkspaceName , Chats , MenuScroll , ProfileModal , LogOutButton , WorkspaceButton ,AddButton , WorkspaceModal  } from "./styles";
 import  useSWR  from "swr";
 import fetcher from "@utils/fetcher";
@@ -23,6 +23,7 @@ import InviteWorkspaceModal from "@components/InviteWorkspaceModal";
 import InviteChannelModal from "@components/InviteChannelModal";
 import ChannelList from "@components/ChannelList";
 import DMList from "@components/DMList";
+import useSocket from "@hooks/useSocket";
 
 
 const Workspace:VFC = ({}) => {
@@ -35,6 +36,7 @@ const Workspace:VFC = ({}) => {
     const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
     const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
     const {workspace} = useParams<{workspace: string}>();    
+    const [socket ,disconnectSocket]= useSocket(workspace);
     
     
     const {data : userData , error, mutate} = useSWR<IUser | false>('/api/users', fetcher,{
@@ -124,6 +126,17 @@ const Workspace:VFC = ({}) => {
     const onClickInviteWorkspace = useCallback(()=>{
         setShowInviteWorkspaceModal(prev=>!prev);
     },[]);
+
+    useEffect(()=>{
+        disconnectSocket();
+    },[disconnectSocket , workspace])
+
+    useEffect(()=>{
+        if(userData && channelData){
+            socket?.emit('login',
+            {id:userData.id , channels:channelData.map(data=>data.id)})
+        }
+    },[socket , userData, channelData]);
 
     console.log('userData',userData);
 

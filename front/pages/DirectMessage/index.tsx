@@ -1,13 +1,17 @@
 import ChatBox from "@components/ChatBox";
+import ChatList from "@components/ChatList";
 import React from "react";
 
 const DirectMesseage = () => {
-    return (        
-        <>
-            <div>다이렉트</div>
+    return (       
+        <div className="container">
+            <header>
+                <img src='' alt='' />
+                <span>이름</span>
+            </header>
+            <ChatList />
             <ChatBox />
-        </>
-        
+        </div>           
     )
 }
 
