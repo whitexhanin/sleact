@@ -15,11 +15,12 @@ import gravatar from 'gravatar';
 import useSocket from "@hooks/useSocket";
 
 const ChatBox:VFC = () => {    
-    const {workspace , id} = useParams<{workspace : string , id:string}>();    
+    const {workspace , id} = useParams<{workspace : string , id:string}>();  
+    const {data : memberDataId} = useSWR<IUser[]>(`/api/workspaces/${workspace}/users/${id}`,fetcher);
     const {data : memberData} = useSWR<IUser[]>(`/api/workspaces/${workspace}/members`)
-    const { data: chatData, mutate: mutateChat, setSize } = useSWRInfinite<IDM[]>(
-        (index) => `/api/workspaces/${workspace}/dms/${id}/chats`,
-        fetcher, {dedupingInterval:100}
+    const { data: chatData, mutate: mutateChat } = useSWR<IDM[]>( 
+        `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,
+        fetcher
       );
     const [chat, onChangeChat, setChat] = useInput('');    
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);  
@@ -48,29 +49,28 @@ const ChatBox:VFC = () => {
     },[workspace , id , chat ]);  
     
 
-    const onKeydownChat  = useCallback((e)=>{
-        console.log('keydown');
-        console.log(e);
-        if(e.keyCode == 13 && e.shiftKey !== true){
+    const onKeydownChat  = useCallback((e)=>{        
+        
+        if(e.key == 'Enter' && !e.shiftKey){            
             onSubmitForm(e);
         }
-    },[])
+    },[onSubmitForm])
 
-    useEffect(()=>{
-        socket?.on('message','message');
-        return()=>{
-            socket?.off('message',chat);
-        }
-    },[chat]);
-    
-    
+    // useEffect(()=>{
+    //     socket?.on('message',chat);
+    //     return()=>{
+    //         socket?.off('message',chat);
+    //     }
+    // },[chat]);        
 
     console.log('?');
+    console.log('chatData3',chatData);
     
     return(
-        <>  {chatData?.map(chat => {
-            <div>chat</div>
-        })}
+        <> 
+            <div>
+                {chatData?.map((chats) => (<p>[{chats.createdAt}] {chats.content}</p>))}
+            </div>            
             <div className="chatarea">
                 <form onSubmit={onSubmitForm}>
                     <textarea 
