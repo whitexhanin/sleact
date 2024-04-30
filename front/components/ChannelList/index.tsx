@@ -38,7 +38,15 @@ const ChannelList = () => {
                 채널 리스트
             </h2>     
             <div>
-                {!channelCollapse && channelData?.map((v)=>{ return <div key={v.name}># {v.name}</div>})}
+                {!channelCollapse && channelData?.map((v)=>{ 
+                    return (
+                    <div key={v.name}>
+                        <NavLink to={`/workspace/${workspace}/channel/${v.name}`}>
+                        # {v.name}
+                        </NavLink>
+                    </div>
+                )}
+                )}
             </div>
         </>
     )
