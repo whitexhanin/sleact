@@ -8,7 +8,7 @@ import axios from 'axios';
 import React, {  FC , useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
 import useSWR from 'swr';
-import { Mention, SuggestionDataItem } from 'react-mentions';
+import { Mention, MentionsInput, SuggestionDataItem } from 'react-mentions';
 import useSocket from "@hooks/useSocket";
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
     data?: IUser[];
   }
 
-const ChatBox:FC<Props> = ({onChangeChat, onSubmitForm , chat}) => {    
+const ChatBox:FC<Props> = ({onChangeChat, onSubmitForm , chat , data}) => {    
     // const {workspace , id} = useParams<{workspace : string , id:string}>();  
     // // const { data: chatData, mutate: mutateChat } = useSWR<IDM[]>( 
     // //     `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,
@@ -67,6 +67,16 @@ const ChatBox:FC<Props> = ({onChangeChat, onSubmitForm , chat}) => {
                         onChange={onChangeChat}
                         onKeyDown={onKeydownChat}
                     >                        
+                        <Mention
+                            appendSpaceOnAdd
+                            trigger="@"
+                            data={data?.map((v)=>({ id: v.id,  display: v.nickname})) || []}                                                        
+                        />
+                        {/* <Mention
+                            trigger="#"
+                            data={this.requestTag}
+                            renderSuggestion={this.renderTagSuggestion}
+                        />                                               */}
                     </textarea>
                     <div className="toolbox">
                         <button>전송</button>

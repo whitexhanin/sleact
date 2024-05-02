@@ -2,7 +2,9 @@
 // import { IDM } from '@typings/db';
 import { IChat, IDM } from '@typings/db';
 import fetcher from '@utils/fetcher';
+import dayjs from 'dayjs';
 import React, { FC } from 'react';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import { useParams } from 'react-router';
 import useSWR from 'swr';
 
@@ -11,11 +13,12 @@ interface Props {
     // isReachingEnd?: boolean;
     // isEmpty: boolean;
     chatData?: IChat[] | IDM[];
+    makeSection ?: IChat[] | IDM[] | any;
     // setSize: (f: (size: number) => number) => Promise<(IDM | IChat)[][] | undefined>;
   }
 
 
-const ChatList:FC<Props> = ({chatData}) => {
+const ChatList:FC<Props> = ({chatData , makeSection}) => {
 
     // const {workspace , id} = useParams<{workspace : string , id:string}>();  
     // const { data: chatData, mutate: mutateChat } = useSWR<IDM[]>( 
@@ -23,20 +26,35 @@ const ChatList:FC<Props> = ({chatData}) => {
     //     fetcher
     //   );    
 
+    // console.log(makeSection);
+
     return(
         <div className="chatzone">
-            <div className="scrollbars">
-            {chatData?.map((chats) => (
-                <section>
-                    <header className="stickyheader">
-                        <button>[{chats.createdAt}]</button>
-                    </header>
-                    <div className='chat'>
-                        {chats.content}
-                    </div>
-                </section>
-            ))}
-            </div>
+            <Scrollbars autoHide>
+                <div>makeSection
+                {makeSection? Object.entries(makeSection).map(([date, chats]) => {
+                    return (
+                        <div>
+                            <button>{date}</button>
+                        </div>
+                    )
+                }) : null}
+                     
+                </div>
+                {chatData?.map((chats) => (
+                    <section>
+                        <header className="stickyheader">
+                            <button>
+                                {dayjs(chats.createdAt).format('{YYYY} MM-DDTHH:mm:ss SSS [Z] A')}
+                            </button>
+                        </header>
+                        <div className='chat'>
+                            {dayjs(chats.createdAt).format('h:mm A')}
+                            {chats.content}
+                        </div>
+                    </section>
+                ))}
+            </Scrollbars>
         </div>
     )
 }
