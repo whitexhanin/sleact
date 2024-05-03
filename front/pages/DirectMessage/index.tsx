@@ -21,7 +21,7 @@ const DirectMesseage = () => {
         `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,
         fetcher
     );  
-    const { data } = useSWR<IUser | false | any>(
+    const { data : memberdata } = useSWR<IUser | false | any>(
         userData? `/api/workspaces/${workspace}/members` : null,
           fetcher          
       );
@@ -59,30 +59,30 @@ const DirectMesseage = () => {
 
     //chatData를 날짜 별로 section 하기
     
-    let sectiondata = chatData? ([] as IDM[]).concat(...chatData).reverse() : []
-    console.log('sectiondata',sectiondata);
+    // let sectiondata = chatData? ([] as IDM[]).concat(...chatData).reverse() : []
+    // console.log('sectiondata',sectiondata);
 
-    const makeSection  = <T extends IDM | IChat> (sectiondata : T[]) => {        
-        const sections: { [key: string]: T[] } = {};
+    // const makeSection  = <T extends IDM | IChat> (sectiondata : T[]) => {        
+    //     const sections: { [key: string]: T[] } = {};
 
-        console.log('makesection');
+    //     console.log('makesection');
 
-        sectiondata.forEach((chat)=>{
-            const month =  dayjs(chat.createdAt).format('YYYY-MM-DD');
+    //     sectiondata.forEach((chat)=>{
+    //         const month =  dayjs(chat.createdAt).format('YYYY-MM-DD');
 
-            console.log('month',month);
-            console.log('isarray',Array.isArray(sections[month]));
+    //         console.log('month',month);
+    //         console.log('isarray',Array.isArray(sections[month]));            
 
-            if(Array.isArray(sections[month])){
-                sections[month].push(chat);
-            }else{
-                sections[month] = [chat];
-            }
-        });
-        return sections;
-    }
+    //         if(Array.isArray(sections[month])){
+    //             sections[month].push(chat);
+    //         }else{
+    //             sections[month] = [chat];
+    //         }
+    //     });
+    //     return sections;
+    // }
 
-    const chatSections = makeSection(sectiondata);
+    // const chatSections = makeSection(sectiondata);
 
     if(userData == undefined){
         console.log('undefined');
@@ -90,13 +90,13 @@ const DirectMesseage = () => {
     }    
     
     return (       
-        <div className="container">
+        <div className="container" style= {{width:'500px'}}>
             <header>
                 <img src={gravatar.url(userData.email,{s:'36px', d:'retro'})} alt={userData.nickname}/>
                 <span>{userData.nickname}</span>
             </header>
-            <ChatList chatData = {chatData} makeSection = {chatSections}/>
-            <ChatBox onSubmitForm ={onSubmitForm} onChangeChat ={onChangeChat} chat = {chat} data={[]}/>
+            <ChatList chatDatas = {chatData}/>
+            <ChatBox onSubmitForm ={onSubmitForm} onChangeChat ={onChangeChat} chat = {chat} />
         </div>           
     )
 }

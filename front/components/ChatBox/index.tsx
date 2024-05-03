@@ -4,6 +4,7 @@ import { IDM, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import autosize from 'autosize';
 import axios from 'axios';
+import gravatar from 'gravatar';
 
 import React, {  FC , useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
@@ -20,13 +21,25 @@ interface Props {
   }
 
 const ChatBox:FC<Props> = ({onChangeChat, onSubmitForm , chat , data}) => {    
+    
+    const {workspace , id} = useParams<{workspace : string , id:string}>();   
+    const { data: myData } = useSWR('/api/users', fetcher,{
+        dedupingInterval:2000,
+    });        
+    const { data : memberdata } = useSWR<IUser[]>(
+        myData? `/api/workspaces/${workspace}/members` : null,
+          fetcher          
+      );
+
+      console.log('memberdata1' , memberdata);
+
     // const {workspace , id} = useParams<{workspace : string , id:string}>();  
     // // const { data: chatData, mutate: mutateChat } = useSWR<IDM[]>( 
     // //     `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,
     // //     fetcher
     // //   );    
       
-    const textareaRef = useRef<HTMLTextAreaElement | null>(null);  
+    const textareaRef = useRef<HTMLTextAreaElement>(null);  
     // const [socket ,disconnectSocket]= useSocket(workspace);
 
     useEffect(()=>{
@@ -54,34 +67,77 @@ const ChatBox:FC<Props> = ({onChangeChat, onSubmitForm , chat , data}) => {
         if(e.key == 'Enter' && !e.shiftKey){            
             onSubmitForm(e);
         }
-    },[onSubmitForm])
+    },[onSubmitForm]);
+
+    // const renderUserSuggestion: (
+    //     suggestion: SuggestionDataItem,
+    //     search: string,
+    //     highlightedDisplay: React.ReactNode,
+    //     index: number,
+    //     focused: boolean,
+    //   ) => React.ReactNode = useCallback(
+    //     (member, search, highlightedDisplay, index, focus) => {
+    //       if (!memberdata) {
+    //         return null;
+    //       }
+    //       return (
+    //         <EachMention focus={focus}>
+    //           <img src={gravatar.url(memberdata[index].email, { s: '20px', d: 'retro' })} alt={memberdata[index].nickname} />
+    //           <span>{highlightedDisplay}</span>
+    //         </EachMention>
+    //       );
+    //     },
+    //     [memberdata],
+    //   );
+
+    const renderUserSuggestion = useCallback((
+        suggestion: SuggestionDataItem,
+        search: string,
+        highlightedDisplay: React.ReactNode,
+        index: number,
+        focus: boolean,
+    ) : React.ReactNode => {
+        if (!memberdata) {
+            return null;
+        }
+        return (
+            <EachMention focus={focus}>
+               <img src={gravatar.url(memberdata[index].email, { s: '20px', d: 'retro' })} alt={memberdata[index].nickname} />
+               <span>{highlightedDisplay}</span>
+             </EachMention>
+        )
+
+    },[memberdata])
     
     return(
         <>                   
             <div className="chatarea">
                 <form onSubmit={onSubmitForm}>
-                    <textarea 
+                    <MentionsTextarea 
                         id="editor-chat"                    
-                        ref={textareaRef} 
+                        inputRef={textareaRef} 
                         value={chat}
                         onChange={onChangeChat}
-                        onKeyDown={onKeydownChat}
+                        onKeyDown={onKeydownChat}           
+                        allowSuggestionsAboveCursor            
                     >                        
                         <Mention
                             appendSpaceOnAdd
                             trigger="@"
-                            data={data?.map((v)=>({ id: v.id,  display: v.nickname})) || []}                                                        
+                            data={memberdata?.map((v) => ({ id: v.id, display: v.nickname })) || []}
+                            renderSuggestion={renderUserSuggestion}                                                       
                         />
                         {/* <Mention
                             trigger="#"
                             data={this.requestTag}
-                            renderSuggestion={this.renderTagSuggestion}
+                            renderSuggestion={this.renderTagSuggestion} 커서 보다 위쪽에 
+
                         />                                               */}
-                    </textarea>
+                    </MentionsTextarea>
                     <div className="toolbox">
                         <button>전송</button>
                     </div>                
-                </form>
+                </form>                
             </div>
         </>
     )

@@ -40,9 +40,9 @@ const Channel = () => {
 
 
     return (
-            <div>
+            <div style= {{width:'500px'}}>
                 채널                                  
-                <ChatList chatData = {chatData} />
+                {/* <ChatList chatData = {chatData} /> */}
                 <ChatBox onSubmitForm ={onSubmitForm} onChangeChat ={onChangeChat} chat = {chat}/>
             </div>
     )
