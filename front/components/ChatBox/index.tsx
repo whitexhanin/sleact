@@ -111,8 +111,8 @@ const ChatBox:FC<Props> = ({onChangeChat, onSubmitForm , chat , data}) => {
     
     return(
         <>                   
-            <div className="chatarea">
-                <form onSubmit={onSubmitForm}>
+            <div className="chatarea" style={{border:'1px dashed #000'}}>
+                <form onSubmit={onSubmitForm} style={{marginBottom:'0'}}>
                     <MentionsTextarea 
                         id="editor-chat"                    
                         inputRef={textareaRef} 
